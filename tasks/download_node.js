@@ -6,44 +6,91 @@
  * Licensed under the MIT license.
  */
 
-'use strict';
+var fs = require('fs');
+var path = require('path');
+var async = require('async');
+var request = require('request');
 
 module.exports = function(grunt) {
+  'use strict';
 
   // Please see the Grunt documentation for more information regarding task
-  // creation: http://gruntjs.com/creating-tasks
+  // creation: https://github.com/gregwym/grunt-download-node.git
 
   grunt.registerMultiTask('download_node', 'Grunt task to download node binaries for multiple platform', function() {
     // Merge task-specific and/or target-specific options with these defaults.
     var options = this.options({
-      punctuation: '.',
-      separator: ', '
+      version: '',
+      platforms: [],
+      dest: '.'
+    });
+    var done = this.async();
+
+    grunt.log.debug('Downloading node with options', JSON.stringify(options));
+
+    if (options.version.length === 0) {
+      grunt.log.error('No node version has been specified!');
+    }
+
+    var files = options.platforms.map(function(platform) {
+      var dest = [options.dest, platform, ''].join('/');
+      var src = ['http://nodejs.org', 'dist', options.version, ''].join('/');
+      var filename = '';
+
+      grunt.file.mkdir(dest);
+      if (platform.indexOf('windows') >= 0) {
+        if (platform.indexOf('x64') >= 0) {
+          src += 'x64/';
+        }
+        filename = 'node.exe';
+      } else {
+        filename = ['node', options.version, platform].join('-') + '.tar.gz';
+      }
+
+      return {
+        src: src + filename,
+        dest: dest + filename
+      };
     });
 
-    // Iterate over all specified file groups.
-    this.files.forEach(function(f) {
-      // Concat specified files.
-      var src = f.src.filter(function(filepath) {
-        // Warn on and remove invalid source files (if nonull was set).
-        if (!grunt.file.exists(filepath)) {
-          grunt.log.warn('Source file "' + filepath + '" not found.');
-          return false;
-        } else {
-          return true;
+    async.map(files, function(file, cb) {
+      var req = request(file.src);
+
+      // On error, callback
+      req.on('error', cb);
+
+      // On response, callback for writing out the stream
+      req.on('response', function handleResponse (res) {
+        // Assert the statusCode was good
+        var statusCode = res.statusCode;
+        if (statusCode < 200 || statusCode >= 300) {
+          return cb(new Error('Fetching ' + file.src + ' failed with HTTP status code ' + statusCode));
         }
-      }).map(function(filepath) {
-        // Read file source.
-        return grunt.file.read(filepath);
-      }).join(grunt.util.normalizelf(options.separator));
 
-      // Handle options.
-      src += options.punctuation;
+        // Otherwise, write out the content
+        var destdir = path.dirname(file.dest);
+        grunt.file.mkdir(destdir);
+        var writeStream = fs.createWriteStream(file.dest);
+        res.pipe(writeStream);
 
-      // Write the destination file.
-      grunt.file.write(f.dest, src);
+        // When the stream errors or completes, exit
+        writeStream.on('error', cb);
+        writeStream.on('close', cb);
+      });
+    }, function(err) {
+      // If there is an error, fail
+      if (err) {
+        grunt.fail.warn(err);
+        return done();
+      }
 
-      // Print a success message.
-      grunt.log.writeln('File "' + f.dest + '" created.');
+      // Otherwise, print a success message.
+      files.map(function(file) {
+        grunt.log.writeln('Files "' + file.dest + '" created.');
+      });
+
+      // Callback
+      done();
     });
   });
 
