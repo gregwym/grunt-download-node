@@ -30,20 +30,28 @@ module.exports = function(grunt) {
 
     // Configuration to be run (and then tested).
     download_node: {
-      default_options: {
+      options: {
+        version: 'v0.10.29',
+        dest: 'tmp'
+      },
+      linux: {
         options: {
-        },
-        files: {
-          'tmp/default_options': ['test/fixtures/testing', 'test/fixtures/123']
+          platforms: ['linux-x64']
         }
       },
-      custom_options: {
+      windows: {
         options: {
-          separator: ': ',
-          punctuation: ' !!!'
-        },
-        files: {
-          'tmp/custom_options': ['test/fixtures/testing', 'test/fixtures/123']
+          platforms: ['windows-x86']
+        }
+      },
+      windows_x64: {
+        options: {
+          platforms: ['windows-x64']
+        }
+      },
+      not_exists: {
+        options: {
+          platforms: ['not-exists']
         }
       }
     },

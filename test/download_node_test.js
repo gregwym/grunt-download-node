@@ -27,21 +27,34 @@ exports.download_node = {
     // setup here if necessary
     done();
   },
-  default_options: function(test) {
+  linux: function(test) {
     test.expect(1);
 
-    var actual = grunt.file.read('tmp/default_options');
-    var expected = grunt.file.read('test/expected/default_options');
-    test.equal(actual, expected, 'should describe what the default behavior is.');
+    var exists = grunt.file.exists('tmp/linux-x64/node-v0.10.29-linux-x64.tar.gz');
+    test.ok(exists);
 
     test.done();
   },
-  custom_options: function(test) {
+  windows: function(test) {
     test.expect(1);
 
-    var actual = grunt.file.read('tmp/custom_options');
-    var expected = grunt.file.read('test/expected/custom_options');
-    test.equal(actual, expected, 'should describe what the custom option(s) behavior is.');
+    var exists = grunt.file.exists('tmp/windows-x86/node.exe');
+    test.ok(exists);
+
+    test.done();
+  },
+  windows_x64: function(test) {
+    test.expect(1);
+
+    var exists = grunt.file.exists('tmp/windows-x86/node.exe');
+    test.ok(exists);
+
+    test.done();
+  },
+  not_exists: function(test) {
+    test.expect(1);
+
+    test.throws();
 
     test.done();
   },
