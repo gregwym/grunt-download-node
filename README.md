@@ -83,10 +83,12 @@ A boolean value to indicate whether should extract the `node` executable from a 
 ```js
 grunt.initConfig({
   download_node: {
-    options: {
-      version: 'v0.10.29',
-      platforms: ['linux-x86', 'darwin-x86', 'sunos-x86', 'windows-x86'],
-      dest: 'node'
+    main: {
+      options: {
+        version: 'v0.10.29',
+        platforms: ['windows-x64', 'darwin-x64', 'sunos-x86', 'linux-x64'],
+        dest: 'node'
+      },
     },
   },
 });
