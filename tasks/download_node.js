@@ -117,6 +117,7 @@ module.exports = function(grunt) {
           // Copy node executable
           try {
             fs.copySync(nodesrc, nodedest);
+            fs.chmodSync(nodedest, '755');
             grunt.log.writeln('Files "' + nodedest + '" created.');
             fs.removeSync(extractdir);
             grunt.log.writeln('Files "' + extractdir + '" removed.');
