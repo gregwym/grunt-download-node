@@ -70,6 +70,12 @@ Default value: `node`
 
 The path to the downloaded executable. The node executable for each platform will be saved in the sub-dir of this path. For example, `node\linux-x86`.
 
+#### options.extract
+Type: `Boolean`
+Default value: `true`
+
+A boolean value to indicate whether should extract the `node` executable from a tar ball. (Not applicable for windows)
+
 ### Usage Examples
 
 #### Single Target
@@ -125,7 +131,8 @@ grunt.initConfig({
       options: {
         version: 'v0.10.19',
         dest: 'node',
-        platforms: ['darwin-x86']
+        platforms: ['darwin-x86'],
+        extract: false
       }
     },
   },

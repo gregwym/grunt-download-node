@@ -6,10 +6,11 @@
  * Licensed under the MIT license.
  */
 
-var fs = require('fs');
+var fs = require('fs-extra');
 var path = require('path');
 var async = require('async');
 var request = require('request');
+var targz = require('tar.gz');
 
 module.exports = function(grunt) {
   'use strict';
@@ -22,6 +23,7 @@ module.exports = function(grunt) {
     var options = this.options({
       version: '',
       platforms: [],
+      extract: true,
       dest: '.'
     });
     var done = this.async();
@@ -89,8 +91,50 @@ module.exports = function(grunt) {
         grunt.log.writeln('Files "' + file.dest + '" created.');
       });
 
-      // Callback
-      done();
+      // Callback unless need to extract
+      if (!options.extract) {
+        return done();
+      }
+
+      async.map(files, function(file, cb) {
+        var dest = file.dest;
+        var destbasename = path.basename(file.dest, '.tar.gz');
+        var destdir = path.dirname(file.dest);
+        if (dest.indexOf('tar.gz') < 0) {
+          return cb();
+        }
+
+        // Extract
+        new targz().extract(dest, destdir, function(err) {
+          if (err) {
+            return cb(err);
+          }
+          var extractdir = path.resolve(destdir, destbasename);
+          var nodesrc = path.resolve(destdir, destbasename + '/', 'bin/', 'node');
+          var nodedest = path.resolve(destdir, 'node');
+          grunt.log.writeln('Files "' + file.dest + '" extracted to "' + extractdir + '".');
+
+          // Copy node executable
+          try {
+            fs.copySync(nodesrc, nodedest);
+            grunt.log.writeln('Files "' + nodedest + '" created.');
+            fs.removeSync(extractdir);
+            grunt.log.writeln('Files "' + extractdir + '" removed.');
+            fs.removeSync(dest);
+            grunt.log.writeln('Files "' + dest + '" removed.');
+          } catch (err) {
+            cb(err);
+          }
+          cb();
+        });
+      }, function(err) {
+        if (err) {
+          grunt.fail.warn(err);
+          return done();
+        }
+
+        done();
+      });
     });
   });
 

@@ -36,7 +36,13 @@ module.exports = function(grunt) {
       },
       linux: {
         options: {
-          platforms: ['linux-x64']
+          platforms: ['linux-x86']
+        }
+      },
+      linux_noextract: {
+        options: {
+          platforms: ['linux-x64'],
+          extract: false
         }
       },
       windows: {

@@ -30,6 +30,14 @@ exports.download_node = {
   linux: function(test) {
     test.expect(1);
 
+    var exists = grunt.file.exists('tmp/linux-x86/node');
+    test.ok(exists);
+
+    test.done();
+  },
+  linux_noextract: function(test) {
+    test.expect(1);
+
     var exists = grunt.file.exists('tmp/linux-x64/node-v0.10.29-linux-x64.tar.gz');
     test.ok(exists);
 
