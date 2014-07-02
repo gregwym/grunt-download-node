@@ -27,6 +27,9 @@ grunt.initConfig({
   download_node: {
     options: {
       // Task-specific options go here.
+      version: 'v0.10.29',
+      platforms: ['linux-x86'],
+      dest: 'node'
     },
     your_target: {
       // Target-specific file lists and/or options go here.
@@ -37,46 +40,93 @@ grunt.initConfig({
 
 ### Options
 
-#### options.separator
+#### options.version (required)
 Type: `String`
-Default value: `',  '`
+Default value: `''`
+Example value: `'v0.10.29'`
 
-A string value that is used to do something with whatever.
+A string value that is used to determin the node version to be downloaded.
 
-#### options.punctuation
+#### options.platforms (required)
+Type: `Array of Strings`
+Default value: `[]`
+Example value: `['linux-x86']`
+
+Possible array values:
+- linux-x86
+- linux-x64
+- darwin-x86
+- darwin-x64
+- sunos-x86
+- sunos-x64
+- windows-x86
+- windows-x64
+
+An array of string value that are used to determin what platforms of node executables to be downloaded.
+
+#### options.dest
 Type: `String`
-Default value: `'.'`
+Default value: `node`
 
-A string value that is used to do something else with whatever else.
+The path to the downloaded executable. The node executable for each platform will be saved in the sub-dir of this path. For example, `node\linux-x86`.
 
 ### Usage Examples
 
-#### Default Options
-In this example, the default options are used to do something with whatever. So if the `testing` file has the content `Testing` and the `123` file had the content `1 2 3`, the generated result would be `Testing, 1 2 3.`
-
-```js
-grunt.initConfig({
-  download_node: {
-    options: {},
-    files: {
-      'dest/default_options': ['src/testing', 'src/123'],
-    },
-  },
-});
-```
-
-#### Custom Options
-In this example, custom options are used to do something else with whatever else. So if the `testing` file has the content `Testing` and the `123` file had the content `1 2 3`, the generated result in this case would be `Testing: 1 2 3 !!!`
+#### Single Target
 
 ```js
 grunt.initConfig({
   download_node: {
     options: {
-      separator: ': ',
-      punctuation: ' !!!',
+      version: 'v0.10.29',
+      platforms: ['linux-x86', 'darwin-x86', 'sunos-x86', 'windows-x86'],
+      dest: 'node'
     },
-    files: {
-      'dest/default_options': ['src/testing', 'src/123'],
+  },
+});
+```
+
+#### Multiple Targets with common options
+
+```js
+grunt.initConfig({
+  download_node: {
+    options: {
+      version: 'v0.10.29',
+      dest: 'node'
+    },
+    linux: {
+      options: {
+        platforms: ['linux-x86']
+      }
+    },
+    mac: {
+      options: {
+        platforms: ['darwin-x86']
+      }
+    },
+  },
+});
+```
+
+#### Multiple Targets
+
+```js
+grunt.initConfig({
+  download_node: {
+    linux: {
+      options: {
+        version: 'v0.10.29',
+        dest: 'node',
+        platforms: ['linux-x86']
+      }
+    },
+    mac: {
+      options: {
+        version: 'v0.10.19',
+        dest: 'node',
+        platforms: ['darwin-x86']
+      }
     },
   },
 });
