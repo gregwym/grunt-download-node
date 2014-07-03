@@ -88,7 +88,7 @@ module.exports = function(grunt) {
 
       // Otherwise, print a success message.
       files.map(function(file) {
-        grunt.log.writeln('Files "' + file.dest + '" created.');
+        grunt.log.writeln('File "' + file.dest + '" created.');
       });
 
       // Callback unless need to extract
@@ -112,17 +112,17 @@ module.exports = function(grunt) {
           var extractdir = path.resolve(destdir, destbasename);
           var nodesrc = path.resolve(destdir, destbasename + '/', 'bin/', 'node');
           var nodedest = path.resolve(destdir, 'node');
-          grunt.log.writeln('Files "' + file.dest + '" extracted to "' + extractdir + '".');
+          grunt.log.writeln('File "' + file.dest + '" extracted to "' + extractdir + '".');
 
           // Copy node executable
           try {
             fs.copySync(nodesrc, nodedest);
             fs.chmodSync(nodedest, '755');
-            grunt.log.writeln('Files "' + nodedest + '" created.');
+            grunt.log.writeln('File "' + nodedest + '" created.');
             fs.removeSync(extractdir);
-            grunt.log.writeln('Files "' + extractdir + '" removed.');
+            grunt.log.writeln('File "' + extractdir + '" removed.');
             fs.removeSync(dest);
-            grunt.log.writeln('Files "' + dest + '" removed.');
+            grunt.log.writeln('File "' + dest + '" removed.');
           } catch (err) {
             cb(err);
           }
